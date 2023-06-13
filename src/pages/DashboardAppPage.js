@@ -2,23 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography, Icon, colors } from '@mui/material';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 
 // sections
 import {
-  AppCurrentVisits,
-  AppWebsiteVisits,
-  AppWidgetSummary,
+  YearPlannerBar,
+  YearPlannerBarIncomplete,
+  FacultyStats,
 } from '../sections/@dashboard/app';
 
 export default function DashboardAppPage() {
   const theme = useTheme();
   const [facultyStats, setFacultyStats] = useState([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedYear2, setSelectedYear2] = useState(new Date().getFullYear());
   const [completedRequests, setCompletedRequests] = useState([]);
-  const [incompleteRequests, setIncompleteRequests] = useState([]);
+  const [incompletedRequests, setIncompletedRequests] = useState([]);
+  const currentYear = new Date().getFullYear();
 
   const getIconByFaculty = (faculty) => {
     if (faculty === 'FIA') {
@@ -44,10 +42,6 @@ export default function DashboardAppPage() {
 
   const handleChangeYear = (event) => {
     setSelectedYear(event.target.value);
-  };
-
-  const handleChangeYear2 = (event) => {
-    setSelectedYear2(event.target.value);
   };
 
   useEffect(() => {
@@ -82,17 +76,16 @@ export default function DashboardAppPage() {
         );
         const data = await response.json();
         setCompletedRequests(data.data.plan);
-        console.log(data.data.plan);
       } catch (error) {
         console.error('Error fetching completed requests:', error);
       }
     };
 
-    const fetchIncompleteRequests = async () => {
+    const fetchInCompletedRequests = async () => {
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(
-          `https://fotocopias-upb.herokuapp.com/api/v1/requests/plan/year/${selectedYear2}`,
+          `https://fotocopias-upb.herokuapp.com/api/v1/requests/plan/year/${selectedYear}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -100,27 +93,21 @@ export default function DashboardAppPage() {
           }
         );
         const data = await response.json();
-        setIncompleteRequests(data.data.plan);
+        setIncompletedRequests(data.data.plan);
       } catch (error) {
-        console.error('Error fetching incomplete requests:', error);
+        console.error('Error fetching planned requests:', error);
       }
     };
 
     fetchFacultyStats();
     fetchCompletedRequests();
-    fetchIncompleteRequests();
-  }, [selectedYear, selectedYear2]);
+    fetchInCompletedRequests();
+  }, [selectedYear]);
 
   const chartLabels = completedRequests.map((request) => {
     const month = parseInt(request._id.pointInTime, 10);
     const formattedMonth = month < 10 ? `0${month}` : month;
     return `${formattedMonth}/01/${selectedYear}`;
-  });
-
-  const incompleteChartLabels = incompleteRequests.map((request) => {
-    const month = parseInt(request._id.pointInTime, 10);
-    const formattedMonth = month < 10 ? `0${month}` : month;
-    return `${formattedMonth}/01/${selectedYear2}`;
   });
 
   const chartData = [
@@ -132,12 +119,18 @@ export default function DashboardAppPage() {
     },
   ];
 
-  const incompleteChartData = [
+  const chartLabelsIncompleted = incompletedRequests.map((request2) => {
+    const month = parseInt(request2._id.pointInTime, 10);
+    const formattedMonth = month < 10 ? `0${month}` : month;
+    return `${formattedMonth}/01/${selectedYear}`;
+  });
+
+  const chartDataIncompleted = [
     {
-      name: 'Pedidos No Completados',
+      name: 'Incompletos',
       type: 'column',
-      fill: colors.red[500],
-      data: incompleteRequests.map((request) => request.totalRequests),
+      fill: 'solid',
+      data: incompletedRequests.map((request2) => request2.totalRequests),
     },
   ];
 
@@ -152,10 +145,10 @@ export default function DashboardAppPage() {
           Bienvenido a Fotocopias UPB
         </Typography>
 
-        <Grid container spacing={3} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+        <Grid container spacing={3} sx={{ alignItems: 'center', justifyContent: 'center' }} xs={12}>
           {facultyStats.map((stat) => (
             <Grid item xs={12} sm={6} md={3} key={stat._id}  >
-              <AppWidgetSummary
+              <FacultyStats
                 title={`Pedidos ${stat._id}`}
                 total={stat.totalRequests}
                 icon={getIconByFaculty(stat._id)}
@@ -164,37 +157,20 @@ export default function DashboardAppPage() {
             </Grid>
           ))}
 
-          <Grid item xs={12} md={6} lg={12}>
-            <AppWebsiteVisits
-              title="Pedidos realizados en el año"
+          <Grid item xs={12} md={12} lg={12}>
+            <YearPlannerBar
+              title={`Pedidos realizados en el año ${currentYear}`}
               chartLabels={chartLabels}
               chartData={chartData}
-              selectComponent={
-                <Select value={selectedYear} onChange={handleChangeYear}>
-                  <MenuItem value={2021}>2021</MenuItem>
-                  <MenuItem value={2022}>2022</MenuItem>
-                  <MenuItem value={2023}>2023</MenuItem>
-                </Select>
-              }
             />
           </Grid>
-
-          <Grid item xs={12} md={6} lg={12}>
-            <AppWebsiteVisits
-              title="Pedidos no completados en el año"
-              chartLabels={chartLabels}
-              chartData={incompleteChartData}
-              selectComponent={
-                <Select value={selectedYear2} onChange={handleChangeYear2}>
-                  <MenuItem value={2021}>2021</MenuItem>
-                  <MenuItem value={2022}>2022</MenuItem>
-                  <MenuItem value={2023}>2023</MenuItem>
-                </Select>
-              }
+          <Grid item xs={12} md={12} lg={12}>
+            <YearPlannerBarIncomplete
+              title={`Pedidos no realizados en el año ${currentYear}`}
+              chartLabels={chartLabelsIncompleted}
+              chartData={chartDataIncompleted}
             />
           </Grid>
-
-
 
         </Grid>
       </Container>

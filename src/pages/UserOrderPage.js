@@ -106,7 +106,6 @@ export default function Order() {
       },
     })
     .then((response) => {
-      console.log(response);
       setLoading(false);
       window.location.href = '/success';
     })
@@ -127,7 +126,7 @@ export default function Order() {
         },
       })
       .then((response) => {
-        console.log(response);
+
       })
       .catch((error) => {
         console.error('Error:', error);

@@ -20,10 +20,30 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
         }
       )
       .then((response) => {
-        // Realizar acciones adicionales si es necesario
-        console.log(response.data);
         // Actualizar el estado del componente padre
         handleStatusChange();
+        window.location.reload(); // Recargar la página completa al cambiar el estado
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
+  const handleDeleteRequest = () => {
+    // Obtener el token del usuario del local storage
+    const token = localStorage.getItem('token');
+
+    // Realizar la solicitud al backend para eliminar el pedido
+    axios
+      .delete(`https://fotocopias-upb.herokuapp.com/api/v1/requests/${selectedRequest.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Adjuntar el token en el encabezado de la solicitud
+        },
+      })
+      .then((response) => {
+        // Actualizar el estado del componente padre
+        handleStatusChange();
+        window.location.reload();
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -40,7 +60,7 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
     }
 
     const downloadUrl = `https://fotocopias-upb.herokuapp.com/api/v1/files/${fileName}`;
-    console.log(downloadUrl);
+
 
     // Obtener el token del usuario del local storage
     const token = localStorage.getItem('token');
@@ -57,7 +77,6 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
         headers,
       })
       .then((response) => {
-        console.log('Archivo', response);
         if (response.status === 200) {
           // Obtener el nombre del archivo desde el encabezado Content-Disposition
           const contentDisposition = response.headers['content-disposition'];
@@ -134,8 +153,13 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
         </Typography>
       )}
       {!selectedRequest.requestIsCompleted && (
-        <Button variant="outlined" color="primary" onClick={handleMarkAsCompleted}>
+        <Button variant="outlined" color="primary" onClick={handleMarkAsCompleted} sx={{margin:1}}>
           Realizado
+        </Button>
+      )}
+      {!selectedRequest.requestIsCompleted && (
+        <Button variant="outlined" color="error" onClick={handleDeleteRequest} sx={{margin:1}}>
+          Eliminar
         </Button>
       )}
     </Box>

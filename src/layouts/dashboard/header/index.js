@@ -7,7 +7,7 @@ import { bgBlur } from '../../../utils/cssStyles';
 // components
 import Iconify from '../../../components/iconify';
 //
-import NotificationsPopover from './NotificationsPopover';
+
 
 // ----------------------------------------------------------------------
 
@@ -56,16 +56,7 @@ export default function Header({ onOpenNav }) {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={{
-            xs: 0.5,
-            sm: 1,
-          }}
-        >
-          <NotificationsPopover />
-        </Stack>
+        
       </StyledToolbar>
     </StyledRoot>
   );

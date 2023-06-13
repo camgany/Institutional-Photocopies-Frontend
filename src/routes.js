@@ -1,7 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
-import SimpleLayout from './layouts/simple';
 // pages
 import UserPage from './pages/OrdersPage';
 import LoginPage from './pages/LoginPage';

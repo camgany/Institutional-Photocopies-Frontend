@@ -15,8 +15,6 @@ function ForgotPassword() {
     axios
       .post('https://fotocopias-upb.herokuapp.com/api/v1/users/forgotPassword', { email })
       .then((response) => {
-        // Realizar acciones adicionales si es necesario
-        console.log(response.data);
       })
       .catch((error) => {
         console.error('Error:', error);

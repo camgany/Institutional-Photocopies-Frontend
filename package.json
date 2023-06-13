@@ -1,8 +1,5 @@
 {
-  "name": "@minimal/material-kit-react",
-  "author": "minimals.cc",
-  "licence": "MIT",
-  "version": "1.7.0",
+  "name": "institutional-photocopies-app-upb",
   "private": false,
   "scripts": {
     "start": "react-scripts start",

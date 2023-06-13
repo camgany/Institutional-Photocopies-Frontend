@@ -22,8 +22,6 @@ export default function LoginForm() {
         setPasswordError(true);
         return;
       }
-
-      console.log(name, upbcode, email, faculty, password, confirmpassword);
       await axios.post('https://fotocopias-upb.herokuapp.com/api/v1/users/signup', {
         name,
         upbCode: upbcode,

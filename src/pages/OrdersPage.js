@@ -18,12 +18,14 @@ import {
   IconButton,
   TableContainer,
   TablePagination,
+  Grid,
 } from '@mui/material';
+
 // components
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { UserListHead} from '../sections/@dashboard/user';
+import { UserListHead } from '../sections/@dashboard/user';
 // mock
 import UserPopoverContent from '../components/file-information/UserPopoverContent';
 // ----------------------------------------------------------------------
@@ -76,11 +78,12 @@ export default function OrdersPage() {
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [users, setUsers] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [request, setRequest] = useState([]);
+  const [showCompletedRequests, setShowCompletedRequests] = useState(false); // Nuevo estado para mostrar pedidos completados o no completados
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchRequests = async () => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get('https://fotocopias-upb.herokuapp.com/api/v1/requests', {
@@ -89,16 +92,15 @@ export default function OrdersPage() {
           },
         });
         const data = response.data;
-        setUsers(data.data.requests); // Actualizar la variable de estado users aquí
+        setRequest(data.data.requests); // Actualizar la variable de estado users aquí
       } catch (error) {
         console.error('Error al obtener los usuarios:', error);
       }
     };
 
-    fetchUsers();
+    fetchRequests();
   }, []);
 
-  console.log(users);
   const handleCloseMenu = () => {
     setOpen(null);
   };
@@ -111,12 +113,12 @@ export default function OrdersPage() {
 
   const handleOpenMenu = (event, user) => {
     setOpen(event.currentTarget);
-    setSelectedUser(user);
+    setSelectedRequest(user);
   };
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
+      const newSelecteds = request.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -181,10 +183,21 @@ export default function OrdersPage() {
     setPage(0);
     setFilterName(event.target.value);
   };
+  const handleShowCompletedRequests = (event) => {
+    setShowCompletedRequests(event.target.checked);
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
+  };
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - request.length) : 0;
 
-  const filteredUsers = applySortFilter(users, getComparator(order, orderBy), filterName);
+  const filteredRequests = request.filter((req) => {
+    if (showCompletedRequests) {
+      return req.requestIsCompleted === true;
+    }
+    return req.requestIsCompleted === false;
+
+  });
+
+  const filteredUsers = applySortFilter(filteredRequests, getComparator(order, orderBy), filterName);
 
   const handleStatusChange = () => {
     handleCloseMenu();
@@ -204,8 +217,20 @@ export default function OrdersPage() {
           <Button variant="contained" onClick={handleDownloadReport}>
             Descargar reporte
           </Button>
+          
         </Stack>
-
+        <Grid container justifyContent="flex-end" alignItems="center" sx={{ mt: 2}}>
+        <Grid item>
+          <Checkbox
+            checked={showCompletedRequests}
+            onChange={handleShowCompletedRequests}
+            color="primary"
+          />
+        </Grid>
+        <Grid item>
+          <Typography variant="body2">Mostrar pedidos completados</Typography>
+        </Grid>
+      </Grid>
         <Card>
 
           <Scrollbar>
@@ -215,23 +240,24 @@ export default function OrdersPage() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={users.length}
+                  rowCount={request.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
+
                 />
-                <TableBody>
+                <TableBody >
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { id, user, faculty, pickUpDate, pickUpTime } = row;
-                    const selectedUser = selected.indexOf(user) !== -1;
+                    const selectedRequest = selected.indexOf(user) !== -1;
 
                     return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
-                      
+                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedRequest}>
+
 
                         <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={4}>
-                            <Typography variant="subtitle2" noWrap>
+                          <Stack direction="row" alignItems="center" spacing={4} sx={{ marginLeft: 1 }}>
+                            <Typography variant="subtitle2" noWrap >
                               {user}
                             </Typography>
                           </Stack>
@@ -264,7 +290,7 @@ export default function OrdersPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={users.length}
+            count={filteredUsers.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -272,7 +298,7 @@ export default function OrdersPage() {
           />
         </Card>
       </Container>
-
+      
       <Popover
         open={Boolean(open)}
         anchorEl={open}
@@ -306,7 +332,7 @@ export default function OrdersPage() {
           },
         }}
       >
-        <UserPopoverContent selectedRequest={selectedUser} handleStatusChange={handleStatusChange} />
+        <UserPopoverContent selectedRequest={selectedRequest} handleStatusChange={handleStatusChange} />
       </Popover>
     </>
   );
