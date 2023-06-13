@@ -3,15 +3,16 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 // pages
-import UserPage from './pages/UserPage';
+import UserPage from './pages/OrdersPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import DashboardAppPage from './pages/DashboardAppPage';
-import UserView from './pages/Checkout';
+import UserOrderPage from './pages/UserOrderPage';
 import SignupPage from './pages/SignupPage';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPasswordPage from './pages/ResetPassword';
 import RequireAuth from './components/required-auth/RequiredAuth';
+import SuccessPage from './pages/SuccessPage';
 
 export default function Router() {
   return (
@@ -27,7 +28,8 @@ export default function Router() {
       </Route>
       </Route>
       
-      <Route path="/user" element={<UserView />} />
+      <Route path="/user" element={<UserOrderPage />} />
+      <Route path="/success" element={<SuccessPage />} />
       <Route path="/" element={<LoginPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { useState, useEffect } from 'react';
+import axios from 'axios'; // Importar axios
 // @mui
 import {
   Button,
@@ -22,7 +23,7 @@ import {
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
+import { UserListHead} from '../sections/@dashboard/user';
 // mock
 import UserPopoverContent from '../components/file-information/UserPopoverContent';
 // ----------------------------------------------------------------------
@@ -67,7 +68,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function UserPage() {
+export default function OrdersPage() {
   const [open, setOpen] = useState(null);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -82,22 +83,20 @@ export default function UserPage() {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3000/api/v1/requests', {
+        const response = await axios.get('https://fotocopias-upb.herokuapp.com/api/v1/requests', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        const data = await response.json();
-        setUsers(data.data.requests); // Update the users state variable here
+        const data = response.data;
+        setUsers(data.data.requests); // Actualizar la variable de estado users aquí
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error al obtener los usuarios:', error);
       }
     };
 
     fetchUsers();
   }, []);
-
-
 
   console.log(users);
   const handleCloseMenu = () => {
@@ -141,33 +140,34 @@ export default function UserPage() {
   const handleDownloadReport = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/v1/files/reports', {
+      const response = await axios.get('https://fotocopias-upb.herokuapp.com/api/v1/files/reports', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        responseType: 'blob',
       });
-      const blob = await response.blob();
+      const blob = response.data;
       const url = window.URL.createObjectURL(blob);
-  
-      const contentDisposition = response.headers.get('content-disposition');
-      let filename = 'report.csv'; // Default filename
-  
+
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'report.csv'; // Nombre de archivo predeterminado
+
       if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename=(?<filename>[^;]+)/);
         if (filenameMatch && filenameMatch.groups && filenameMatch.groups.filename) {
           filename = filenameMatch.groups.filename;
         }
       }
-  
+
       const a = document.createElement('a');
       a.href = url;
       a.download = filename;
       a.click();
     } catch (error) {
-      console.error('Error downloading report:', error);
+      console.error('Error al descargar el informe:', error);
     }
   };
-  
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -186,16 +186,14 @@ export default function UserPage() {
 
   const filteredUsers = applySortFilter(users, getComparator(order, orderBy), filterName);
 
-
   const handleStatusChange = () => {
     handleCloseMenu();
   };
 
-
   return (
     <>
       <Helmet>
-        <title> Pedidos | Fotocopias </title>
+        <title>Pedidos | Fotocopias</title>
       </Helmet>
 
       <Container>
@@ -209,7 +207,6 @@ export default function UserPage() {
         </Stack>
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -230,9 +227,7 @@ export default function UserPage() {
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, user)} />
-                        </TableCell>
+                      
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={4}>
@@ -244,11 +239,8 @@ export default function UserPage() {
 
                         <TableCell align="left">{faculty}</TableCell>
 
-                        <TableCell align="left">{pickUpDate} </TableCell>
-                        <TableCell align="left">{pickUpTime} </TableCell>
-
-
-
+                        <TableCell align="left">{pickUpDate}</TableCell>
+                        <TableCell align="left">{pickUpTime}</TableCell>
 
                         <TableCell align="right">
                           <IconButton onClick={(event) => handleOpenMenu(event, row)}>
@@ -314,7 +306,6 @@ export default function UserPage() {
           },
         }}
       >
-
         <UserPopoverContent selectedRequest={selectedUser} handleStatusChange={handleStatusChange} />
       </Popover>
     </>

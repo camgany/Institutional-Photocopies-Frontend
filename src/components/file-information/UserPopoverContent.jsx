@@ -8,19 +8,22 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
     const token = localStorage.getItem('token');
 
     // Realizar la solicitud al backend para marcar como completado
-    axios.patch(
-      `http://localhost:3000/api/v1/requests/${selectedRequest.id}`,
-      { isCompleted: true },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Adjuntar el token en el encabezado de la solicitud
-        },
-      }
-    )
+    axios
+      .patch(
+        `https://fotocopias-upb.herokuapp.com/api/v1/requests/${selectedRequest.id}`,
+        { isCompleted: true },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Adjuntar el token en el encabezado de la solicitud
+          },
+        }
+      )
       .then((response) => {
         // Realizar acciones adicionales si es necesario
         console.log(response.data);
+        // Actualizar el estado del componente padre
+        handleStatusChange();
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -29,7 +32,14 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
 
   const handleDownloadFile = () => {
     const fileName = selectedRequest.fileName;
-    const downloadUrl = `http://localhost:3000/api/v1/files/${fileName}`;
+
+    if (fileName === 'NO_FILE_INCLUDED') {
+      // Si el nombre del archivo es "NO_FILE_INCLUDED", mostrar mensaje de que no se adjuntó archivo
+      console.log('NO SE ADJUNTO ARCHIVO');
+      return;
+    }
+
+    const downloadUrl = `https://fotocopias-upb.herokuapp.com/api/v1/files/${fileName}`;
     console.log(downloadUrl);
 
     // Obtener el token del usuario del local storage
@@ -41,12 +51,13 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
     };
 
     // Descargar el archivo utilizando Axios
-    axios.get(downloadUrl, {
-      responseType: 'blob',
-      headers,
-    })
+    axios
+      .get(downloadUrl, {
+        responseType: 'blob',
+        headers,
+      })
       .then((response) => {
-        console.log("Archivo",response);
+        console.log('Archivo', response);
         if (response.status === 200) {
           // Obtener el nombre del archivo desde el encabezado Content-Disposition
           const contentDisposition = response.headers['content-disposition'];
@@ -72,7 +83,6 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
   };
 
   return (
-    console.log('selected request:',selectedRequest),
     <Box sx={{ p: 2 }}>
       <Typography variant="h6" sx={{ mb: 2 }}>
         <strong>NOMBRE: </strong>
@@ -109,22 +119,25 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
       </Typography>
       <Typography variant="body2" sx={{ mb: 2 }}>
         <strong>Documento: </strong>
-        <Link
-          href="#"
-          variant="body2"
-          sx={{ display: 'block', mt: 2 }}
-          onClick={handleDownloadFile}
-        >
-          Descargar archivo
-        </Link>
+        {selectedRequest.fileName === 'NO_FILE_INCLUDED' ? (
+          <Typography variant="body2">NO SE ADJUNTO ARCHIVO</Typography>
+        ) : (
+          <Link href="#" variant="body2" sx={{ display: 'block', mt: 2 }} onClick={handleDownloadFile}>
+            Descargar archivo
+          </Link>
+        )}
       </Typography>
-      <Typography variant="body2" sx={{ mb: 2 }}>
-        <strong>Especificaciones: </strong>
-        {selectedRequest && selectedRequest.specifications}
-      </Typography>
-      <Button variant="outlined" color="primary" onClick={handleMarkAsCompleted}>
-        Realizado
-      </Button>
+      {selectedRequest.specifications && (
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          <strong>Especificaciones: </strong>
+          {selectedRequest.specifications}
+        </Typography>
+      )}
+      {!selectedRequest.requestIsCompleted && (
+        <Button variant="outlined" color="primary" onClick={handleMarkAsCompleted}>
+          Realizado
+        </Button>
+      )}
     </Box>
   );
 }

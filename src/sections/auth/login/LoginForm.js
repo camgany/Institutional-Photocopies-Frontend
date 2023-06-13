@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
 import axios from 'axios';
-import { Stack, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Stack, IconButton, InputAdornment, TextField, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button, Link } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/iconify';
@@ -11,11 +11,12 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error] = useState('');
+  const [open, setOpen] = useState(false);
 
   const handleClick = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/api/v1/users/login', {
+      const response = await axios.post('https://fotocopias-upb.herokuapp.com/api/v1/users/login', {
         email,
         password,
       });
@@ -26,12 +27,16 @@ export default function LoginForm() {
 
         navigate('/dashboard/app', { replace: true });
       } else {
-        setError('Credenciales inválidas. Verifica tu correo y contraseña.');
+        setOpen(true);
       }
     } catch (error) {
-      setError('Hubo un error al iniciar sesión. Por favor, intenta nuevamente más tarde.');
+      setOpen(true);
       console.error(error);
     }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const [email, setEmail] = useState('');
@@ -69,9 +74,21 @@ export default function LoginForm() {
         </Typography>
       )}
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
+      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick} sx={{ mt: 3 }} loadingIndicator="Cargando...">
         Iniciar sesión
       </LoadingButton>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Error</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="error" align="center">
+            Correo o contraseña inválidos. Por favor, inténtelo nuevamente.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

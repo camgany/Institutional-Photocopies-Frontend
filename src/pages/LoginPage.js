@@ -1,24 +1,19 @@
 import { Helmet } from 'react-helmet-async';
-// @mui
 import { Link } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Container, Typography, Grid } from '@mui/material';
-import axios from 'axios';
-// hooks
+import { Container, Typography, Grid, Button } from '@mui/material';
 import useResponsive from '../hooks/useResponsive';
-// components
-import Logo from '../components/logo';
-
-// sections
 import { LoginForm } from '../sections/auth/login';
 import logoupb from '../assets/buho.png';
-
-
 
 const StyledRoot = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  height: '100vh', // Occupy full screen height
+  overflow: 'hidden', // Hide scrollbars
 }));
 
 const StyledSection = styled('div')(({ theme }) => ({
@@ -34,14 +29,18 @@ const StyledSection = styled('div')(({ theme }) => ({
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 480,
   margin: 'auto',
-  minHeight: '100vh',
   display: 'flex',
   justifyContent: 'center',
   flexDirection: 'column',
   padding: theme.spacing(12, 0),
 }));
 
-// ----------------------------------------------------------------------
+const StyledLinksContainer = styled(Grid)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(4), // Aumenta el espacio inferior para separarlo del botón
+  display: 'flex',
+  justifyContent: 'center', // Centra el contenido horizontalmente
+}));
 
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
@@ -49,52 +48,44 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | Fotocopias </title>
+        <title> Iniciar Sesión | Fotocopias </title>
       </Helmet>
 
       <StyledRoot>
-        <Logo
-          sx={{
-            position: 'fixed',
-            top: { xs: 16, sm: 24, md: 40 },
-            left: { xs: 16, sm: 24, md: 40 },
-          }}
-        />
-
         {mdUp && (
           <StyledSection>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Bienvenido a <br /> <b>UPB</b>
-            </Typography>
-            <img src={logoupb} alt="logo" width="100%" height="100%" />
+            <img src={logoupb} alt="logo" style={{ width: '100%', height: 'auto' }} />
           </StyledSection>
         )}
 
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>
-              Iniciar Sesión
+              Fotocopias UPB
             </Typography>
 
             <LoginForm />
-            <Grid container justifyContent="flex-end" p={2}>
+
+            <StyledLinksContainer container>
               <Grid item>
                 <Link to="/forgot-password" variant="body2">
-                  Olvidaste tu contraseña? 
+                  ¿Olvidaste tu contraseña?
                 </Link>
               </Grid>
-            </Grid>
-            <Grid container justifyContent="flex-end" p={2}>  
-            <Grid item>
-                <Link to="/signup" variant="body2">
-                  No tienes una cuenta? Registrate
-                </Link>
-              </Grid>
-            </Grid>
+            </StyledLinksContainer>
+
+            <Button
+              component={Link}
+              to="/signup"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2 }} // Añade espacio superior para separarlo del enlace
+            >
+              Regístrate
+            </Button>
           </StyledContent>
-          
         </Container>
-        
       </StyledRoot>
     </>
   );

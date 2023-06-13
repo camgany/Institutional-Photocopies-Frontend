@@ -31,7 +31,7 @@ export default function ResetPasswordPage() {
 
     // Send the new password to the server using axios
     axios
-      .post('http://localhost:3000/api/v1/users/resetPassword', { newPassword })
+      .post('https://fotocopias-upb.herokuapp.com/api/v1/users/resetPassword', { newPassword })
       .then((response) => {
         // Redirect the user to the login page
         navigate('/login');
@@ -108,7 +108,7 @@ export default function ResetPasswordPage() {
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body2" align="center">
-                  Recuerdas tu contraseña? <Link to="/">Log in</Link>
+                  ¿Recuerdas tu contraseña? <Link to="/">Iniciar Sesión</Link>
                 </Typography>
               </Grid>
             </Grid>

@@ -13,7 +13,7 @@ function ForgotPassword() {
 
     // Realizar la solicitud al backend para enviar el correo de restablecimiento de contraseña
     axios
-      .post('http://localhost:3000/api/v1/users/forgotPassword', { email })
+      .post('https://fotocopias-upb.herokuapp.com/api/v1/users/forgotPassword', { email })
       .then((response) => {
         // Realizar acciones adicionales si es necesario
         console.log(response.data);

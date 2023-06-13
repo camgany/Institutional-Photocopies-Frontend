@@ -1,33 +1,66 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { Grid, IconButton, InputAdornment, MenuItem, Popover, Select, Stack, TextField } from '@mui/material';
+import { Grid, IconButton, InputAdornment, MenuItem, Stack, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Iconify from '../../../components/iconify';
 
-
-
 export default function LoginForm() {
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [repeatError, setRepeatError] = useState(false);
+  const [upbCodeError, setUpbCodeError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [backendError, setBackendError] = useState('');
 
   const handleClick = async () => {
     try {
+      if (upbcode.length !== 5) {
+        setUpbCodeError(true);
+        return;
+      }
+
+      if (password !== confirmpassword) {
+        setPasswordError(true);
+        return;
+      }
+
       console.log(name, upbcode, email, faculty, password, confirmpassword);
-      const response = await axios.post('http://localhost:3000/api/v1/users/signup', {
+      await axios.post('https://fotocopias-upb.herokuapp.com/api/v1/users/signup', {
         name,
         upbCode: upbcode,
         email,
         faculty,
         password,
         confirmPassword: confirmpassword,
-        
       });
-       
+
+      // Navigate to the login screen after successful signup
+      window.location.href = '/';
     } catch (error) {
-      setRepeatError(true);
-      console.error(error);
+      if (error.response && error.response.status === 500) {
+        setBackendError('El correo electrónico o el código UPB ya están registrados, por favor intente con otros datos');
+      } else {
+        setRepeatError(true);
+        console.error(error);
+      }
     }
+  };
+
+  const handleUpbCodeChange = (e) => {
+    const value = e.target.value;
+    if (value.length === 5) {
+      setUpbCodeError(false);
+    }
+    setUpbcode(value);
+  };
+
+  const handleAlertClose = () => {
+    setUpbCodeError(false);
+  };
+
+  const handleCloseErrorPopup = () => {
+    setUpbCodeError(false);
+    setPasswordError(false);
+    setBackendError('');
   };
 
   const [name, setName] = useState('');
@@ -36,7 +69,6 @@ export default function LoginForm() {
   const [faculty, setFaculty] = useState('');
   const [password, setPassword] = useState('');
   const [confirmpassword, setConfirmpassword] = useState('');
-  const [repeatError, setRepeatError] = useState(false);
 
   return (
     <>
@@ -45,7 +77,14 @@ export default function LoginForm() {
           <TextField name="name" label="Nombre" type='text' onChange={(e) => setName(e.target.value)} />
         </Grid>
         <Grid item xs={12} sm={6} textAlign="center">
-          <TextField name="upbcode" label="Codigo UPB" type='number' onChange={(e) => setUpbcode(e.target.value)} />
+          <TextField
+            name="upbcode"
+            label="Codigo UPB"
+            type="number"
+            onChange={handleUpbCodeChange}
+            error={upbCodeError}
+            helperText={upbCodeError && 'El código UPB debe tener 5 dígitos'}
+          />
         </Grid>
         <Grid item xs={12} sm={6} textAlign="center">
           <TextField name="email" label="Correo electrónico" type='email' onChange={(e) => setEmail(e.target.value)} />
@@ -102,9 +141,22 @@ export default function LoginForm() {
       <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick} sx={{ mt: 3 }}>
         Registrarse
       </LoadingButton>
-      <Stack direction="row" justifyContent="center" alignItems="center" sx={repeatError?{ visibility: 'visible' }:{ visibility: 'hidden' }}>
+      <Stack direction="row" justifyContent="center" alignItems="center" sx={repeatError ? { visibility: 'visible' } : { visibility: 'hidden' }}>
         <span>Codigo repetido</span>
       </Stack>
+
+      {/* Error Popup */}
+      <Dialog open={upbCodeError || passwordError || backendError !== ''} onClose={handleCloseErrorPopup}>
+        <DialogTitle>Error</DialogTitle>
+        <DialogContent>
+          {upbCodeError && <p>El código UPB debe tener exactamente 5 dígitos.</p>}
+          {passwordError && <p>Las contraseñas no coinciden.</p>}
+          {backendError && <p>{backendError}</p>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseErrorPopup}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
