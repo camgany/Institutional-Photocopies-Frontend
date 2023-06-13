@@ -105,7 +105,7 @@ export default function Order() {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((response) => {
+    .then(() => {
       setLoading(false);
       window.location.href = '/success';
     })
@@ -125,7 +125,7 @@ export default function Order() {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((response) => {
+      .then(() => {
 
       })
       .catch((error) => {

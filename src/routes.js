@@ -19,11 +19,11 @@ export default function Router() {
       <Route path="/signup" element={<SignupPage />} />
       <Route element={<RequireAuth allowRoles={['admin']} />}>      
       <Route path="/dashboard/*" element={<DashboardLayout />}>
-        <Route index element={<Navigate to="/dashboard/app" />} />
-        <Route path="app" element={<DashboardAppPage />} />
+        <Route index element={<Navigate to="/dashboard/home" />} />
+        <Route path="home" element={<DashboardAppPage />} />
         <Route path="orders" element={<UserPage />} />
         <Route path="404" element={<Page404 />} />
-        <Route path="*" element={<Navigate to="/404" />} />
+        <Route path="*" element={<Page404 />} />
       </Route>
       </Route>
       
@@ -35,7 +35,7 @@ export default function Router() {
       
     
       
-      <Route path="*" element={<Navigate to="/404" replace />} />
+      <Route path="*" element={<Page404 />} />
     </Routes>
   );
 }

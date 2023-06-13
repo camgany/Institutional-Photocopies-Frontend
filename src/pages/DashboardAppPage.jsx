@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography, Icon, colors } from '@mui/material';
+import { Grid, Container, Typography } from '@mui/material';
 
 // sections
 import {
@@ -13,7 +13,7 @@ import {
 export default function DashboardAppPage() {
   const theme = useTheme();
   const [facultyStats, setFacultyStats] = useState([]);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear] = useState(new Date().getFullYear());
   const [completedRequests, setCompletedRequests] = useState([]);
   const [incompletedRequests, setIncompletedRequests] = useState([]);
   const currentYear = new Date().getFullYear();
@@ -40,9 +40,6 @@ export default function DashboardAppPage() {
     return theme.palette.secondary.main; // Reemplaza 'secondary' con el color para las demás facultades
   };
 
-  const handleChangeYear = (event) => {
-    setSelectedYear(event.target.value);
-  };
 
   useEffect(() => {
     const fetchFacultyStats = async () => {

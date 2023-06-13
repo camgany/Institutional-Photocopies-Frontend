@@ -25,7 +25,7 @@ export default function LoginForm() {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        navigate('/dashboard/app', { replace: true });
+        navigate('/dashboard/home', { replace: true });
       } else {
         setOpen(true);
       }
