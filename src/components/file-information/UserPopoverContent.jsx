@@ -136,16 +136,19 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
         <br />
         {selectedRequest.isRinged ? 'Anillado' : ''}
       </Typography>
-      <Typography variant="body2" sx={{ mb: 2 }}>
-        <strong>Documento: </strong>
-        {selectedRequest.fileName === 'NO_FILE_INCLUDED' ? (
-          <Typography variant="body2">NO SE ADJUNTO ARCHIVO</Typography>
-        ) : (
-          <Link href="#" variant="body2" sx={{ display: 'block', mt: 2 }} onClick={handleDownloadFile}>
-            Descargar archivo
-          </Link>
-        )}
-      </Typography>
+      {!selectedRequest.requestIsCompleted && (
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          <strong>Documento: </strong>
+          {selectedRequest.fileName === 'NO_FILE_INCLUDED' ? (
+            <Typography variant="body2">NO SE ADJUNTO ARCHIVO</Typography>
+          ) : (
+            <Link href="#" variant="body2" sx={{ display: 'block', mt: 2 }} onClick={handleDownloadFile}>
+              Descargar archivo
+            </Link>
+          )}
+        </Typography>
+      )}
+
       {selectedRequest.specifications && (
         <Typography variant="body2" sx={{ mb: 2 }}>
           <strong>Especificaciones: </strong>
@@ -153,12 +156,12 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
         </Typography>
       )}
       {!selectedRequest.requestIsCompleted && (
-        <Button variant="outlined" color="primary" onClick={handleMarkAsCompleted} sx={{margin:1}}>
+        <Button variant="outlined" color="primary" onClick={handleMarkAsCompleted} sx={{ margin: 1 }}>
           Realizado
         </Button>
       )}
       {!selectedRequest.requestIsCompleted && (
-        <Button variant="outlined" color="error" onClick={handleDeleteRequest} sx={{margin:1}}>
+        <Button variant="outlined" color="error" onClick={handleDeleteRequest} sx={{ margin: 1 }}>
           Eliminar
         </Button>
       )}

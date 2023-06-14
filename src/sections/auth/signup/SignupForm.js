@@ -81,7 +81,7 @@ export default function LoginForm() {
             type="number"
             onChange={handleUpbCodeChange}
             error={upbCodeError}
-            helperText={upbCodeError && 'El código UPB debe tener 5 dígitos'}
+            helperText={upbCodeError && 'Ingrese un código UPB válido'}
           />
         </Grid>
         <Grid item xs={12} sm={6} textAlign="center">

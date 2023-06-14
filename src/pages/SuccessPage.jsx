@@ -10,6 +10,10 @@ const OrderSuccess = () => {
     window.location.href = '/user';
   };
 
+  const handleLogout = () => {
+    window.location.href = '/';
+  };
+
   return (
     <Container maxWidth="sm">
       <Box
@@ -25,13 +29,14 @@ const OrderSuccess = () => {
         <Typography variant="body1" align="center" gutterBottom>
           Gracias por realizar tu pedido. Procesaremos tu solicitud y te informaremos sobre la disponibilidad y la fecha de recogida.
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleNewOrder}
-          sx={{ mt: 3 }}
-        >
+        <Button variant="contained" color="primary" onClick={handleNewOrder} sx={{ mt: 3 }}>
           Realizar otro pedido
+        </Button>
+        <Typography variant="body2" sx={{ mt: 3, fontWeight: 'bold' }}>
+          ¿Deseas cerrar sesión?
+        </Typography>
+        <Button variant="contained" color="primary" onClick={handleLogout} sx={{ mt: 3 }}>
+          Logout
         </Button>
       </Box>
     </Container>
