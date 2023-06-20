@@ -196,7 +196,7 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
           Eliminar
         </Button>
       )}
-      {selectedRequest.requestIsCompleted && (
+      {selectedRequest.requestIsCompleted && selectedRequest.isRinged && (
         <Typography variant="body2" sx={{ mb: 2 }}>
           <strong>Tamaño del anillo: </strong>
           {selectedRequest.ringSize} mm
