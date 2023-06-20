@@ -1,13 +1,13 @@
-import React from 'react';
-import { Box, Typography, Button, Link } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Button, Link, Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 
 function UserPopoverContent({ selectedRequest, handleStatusChange }) {
+  const [ringSize, setRingSize] = useState('');
+
   const handleMarkAsCompleted = () => {
-    // Obtener el token del usuario del local storage
     const token = localStorage.getItem('token');
 
-    // Realizar la solicitud al backend para marcar como completado
     axios
       .patch(
         `https://fotocopias-upb.herokuapp.com/api/v1/requests/${selectedRequest.id}`,
@@ -15,14 +15,13 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Adjuntar el token en el encabezado de la solicitud
+            Authorization: `Bearer ${token}`,
           },
         }
       )
       .then((response) => {
-        // Actualizar el estado del componente padre
         handleStatusChange();
-        window.location.reload(); // Recargar la página completa al cambiar el estado
+        window.location.reload();
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -30,18 +29,15 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
   };
 
   const handleDeleteRequest = () => {
-    // Obtener el token del usuario del local storage
     const token = localStorage.getItem('token');
 
-    // Realizar la solicitud al backend para eliminar el pedido
     axios
       .delete(`https://fotocopias-upb.herokuapp.com/api/v1/requests/${selectedRequest.id}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Adjuntar el token en el encabezado de la solicitud
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        // Actualizar el estado del componente padre
         handleStatusChange();
         window.location.reload();
       })
@@ -54,23 +50,17 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
     const fileName = selectedRequest.fileName;
 
     if (fileName === 'NO_FILE_INCLUDED') {
-      // Si el nombre del archivo es "NO_FILE_INCLUDED", mostrar mensaje de que no se adjuntó archivo
       console.log('NO SE ADJUNTO ARCHIVO');
       return;
     }
 
     const downloadUrl = `https://fotocopias-upb.herokuapp.com/api/v1/files/${fileName}`;
 
-
-    // Obtener el token del usuario del local storage
     const token = localStorage.getItem('token');
-
-    // Crear un encabezado de autenticación con el token
     const headers = {
       Authorization: `Bearer ${token}`,
     };
 
-    // Descargar el archivo utilizando Axios
     axios
       .get(downloadUrl, {
         responseType: 'blob',
@@ -78,13 +68,11 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
       })
       .then((response) => {
         if (response.status === 200) {
-          // Obtener el nombre del archivo desde el encabezado Content-Disposition
           const contentDisposition = response.headers['content-disposition'];
           const regex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
           const match = regex.exec(contentDisposition);
           const downloadedFileName = match && match[1] ? match[1].replace(/['"]/g, '') : fileName;
 
-          // Crear un enlace temporal para descargar el archivo
           const downloadLink = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
           link.href = downloadLink;
@@ -95,6 +83,29 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
         } else {
           throw new Error('Error en la descarga del archivo');
         }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
+  const handleRingSizeChange = (event) => {
+    setRingSize(event.target.value);
+    const token = localStorage.getItem('token');
+
+    axios
+      .patch(
+        `https://fotocopias-upb.herokuapp.com/api/v1/requests/ringed/${selectedRequest.id}`,
+        { ringSize: event.target.value },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log('Datos:', response.data);
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -134,7 +145,28 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
         <br />
         {selectedRequest.isFrontAndBack ? 'Anverso y Reverso' : 'Una sola cara'}
         <br />
-        {selectedRequest.isRinged ? 'Anillado' : ''}
+        {selectedRequest.isRinged && !selectedRequest.requestIsCompleted && (
+          <>
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              <strong>Seleccionar tamaño del anillado: </strong>
+            </Typography>
+            <Select value={ringSize} onChange={handleRingSizeChange} fullWidth
+            >
+              <MenuItem value={7}>7 mm</MenuItem>
+              <MenuItem value={9}>9 mm</MenuItem>
+              <MenuItem value={12}>12 mm</MenuItem>
+              <MenuItem value={14}>14 mm</MenuItem>
+              <MenuItem value={17}>17 mm</MenuItem>
+              <MenuItem value={20}>20 mm</MenuItem>
+              <MenuItem value={23}>23 mm</MenuItem>
+              <MenuItem value={25}>25 mm</MenuItem>
+              <MenuItem value={29}>29 mm</MenuItem>
+              <MenuItem value={33}>33 mm</MenuItem>
+              <MenuItem value={40}>40 mm</MenuItem>
+              <MenuItem value={45}>45 mm</MenuItem>
+            </Select>
+          </>
+        )}
       </Typography>
       {!selectedRequest.requestIsCompleted && (
         <Typography variant="body2" sx={{ mb: 2 }}>
@@ -148,7 +180,6 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
           )}
         </Typography>
       )}
-
       {selectedRequest.specifications && (
         <Typography variant="body2" sx={{ mb: 2 }}>
           <strong>Especificaciones: </strong>
@@ -164,6 +195,12 @@ function UserPopoverContent({ selectedRequest, handleStatusChange }) {
         <Button variant="outlined" color="error" onClick={handleDeleteRequest} sx={{ margin: 1 }}>
           Eliminar
         </Button>
+      )}
+      {selectedRequest.requestIsCompleted && (
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          <strong>Tamaño del anillo: </strong>
+          {selectedRequest.ringSize} mm
+        </Typography>
       )}
     </Box>
   );

@@ -98,6 +98,9 @@ export default function LoginForm() {
             <MenuItem value={'FACED'}>FIA</MenuItem>
             <MenuItem value={'FIA'}>FACED</MenuItem>
             <MenuItem value={'DAAE'}>DAAE</MenuItem>
+            <MenuItem value={'ADM'}>ADM</MenuItem>
+            <MenuItem value={'VRA'}>VRA</MenuItem>
+            <MenuItem value={'MKT'}>MKT</MenuItem>
           </TextField>
         </Grid>
         <Grid item xs={12} sm={6} textAlign="center">

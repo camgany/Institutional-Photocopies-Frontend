@@ -25,7 +25,14 @@ export default function DashboardAppPage() {
       return 'material-symbols:engineering'; // Reemplaza 'finanzas-icono' con el nombre del icono para FACED
     } if (faculty === 'DAAE') {
       return 'wpf:administrator'; // Reemplaza 'admin-icono' con el nombre del icono para DAAE
+    } if (faculty === 'MKT') {
+      return 'nimbus:marketing'; // Reemplaza 'marketing-icono' con el nombre del icono para MKT
+    } if (faculty === 'VRA') {
+      return 'dashicons:admin-users'; // Reemplaza 'vra-icono' con el nombre del icono para VRA
+    } if (faculty === 'ADM') {
+      return 'ri:admin-fill'; // Reemplaza 'adm-icono' con el nombre del icono para ADM
     }
+      
     return 'ant-design:android-filled'; // Reemplaza 'ant-design:android-filled' con el nombre del icono para las demás facultades
   };
 
@@ -156,14 +163,14 @@ export default function DashboardAppPage() {
 
           <Grid item xs={12} md={12} lg={12}>
             <YearPlannerBar
-              title={`Pedidos realizados en el año ${currentYear}`}
+              title={`Pedidos completos en el año ${currentYear}`}
               chartLabels={chartLabels}
               chartData={chartData}
             />
           </Grid>
           <Grid item xs={12} md={12} lg={12}>
             <YearPlannerBarIncomplete
-              title={`Pedidos no realizados en el año ${currentYear}`}
+              title={`Pedidos incompletos en el año ${currentYear}`}
               chartLabels={chartLabelsIncompleted}
               chartData={chartDataIncompleted}
             />
