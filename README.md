@@ -37,11 +37,11 @@ Para instalar y configurar el frontend del proyecto, se deben seguir los siguien
 
 1. Clonar el repositorio del proyecto en la máquina local, utilizando el siguiente comando:
 ```
-git clone https://github.com/camgany/internal-practice.git
+git clone https://github.com/camgany/Institutional-Photocopies-Frontend.git
 ```
 2. Abrir la carpeta del proyecto en un editor de código, como Visual Studio Code, y abrir una terminal integrada.
 ```
-cd internal-practice
+cd Institutional-Photocopies-Frontend
 ```
 3. Ejecutar el siguiente comando para instalar las dependencias del proyecto:
 ```
