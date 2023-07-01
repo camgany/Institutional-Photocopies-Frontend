@@ -1,5 +1,6 @@
-# Página Web Fotocopias UPB 🏢💻
-## Descripción del Frontend del Proyecto 📋
+# Página Web Fotocopias UPB 🏢💻 
+## Acerca del proyecto 📋
+El proyecto de práctica interna consiste en el desarrollo de una aplicación web para la gestión de solicitudes de fotocopiado en la Universidad Privada Boliviana (UPB). El objetivo principal es proporcionar un servicio eficiente y de calidad a los estudiantes, docentes y personal administrativo de la universidad, permitiendo realizar solicitudes de fotocopiado de manera rápida y sencilla. Además, se busca facilitar la gestión y supervisión de los pedidos por parte del personal encargado del servicio de fotocopiado.
 El frontend del proyecto consiste en la parte de la aplicación web que se encarga de la interfaz de usuario y la interacción visual. El objetivo principal es proporcionar una experiencia de usuario fluida y amigable, tanto para los usuarios que realizan solicitudes de fotocopiado como para el administrador encargado de gestionar y supervisar los pedidos.
 
 ## Características principales 🚀
